@@ -23,5 +23,27 @@ def user_api_view(request):
 
 
 
+@api_view(['GET','PUT','DELETE'])
+def one_user_api_view(request,pk):
 
+    if request.method == 'GET':
+
+        user = User.objects.filter(id=pk).first()
+        print(user)
+        user_serializer = UserSerializer(user)
+        return Response (user_serializer.data)
     
+    if request.method == 'PUT':
+
+        user = User.objects.filter(id=pk).first()
+        modification = UserSerializer(user, data = request.data)
+        if modification.is_valid():
+            modification.save()
+            return Response(modification.data)
+        else:
+            return Response(modification.errors)
+        
+    if request.method == 'DELETE':
+        user = User.objects.filter(id=pk).first()
+        user.delete()
+        return Response('Deleted')
